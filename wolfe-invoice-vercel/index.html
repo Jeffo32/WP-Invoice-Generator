@@ -288,7 +288,18 @@
     body { background: #fff !important; padding: 0 !important; display: block !important; }
     h1, .form-card, .inv-actions { display: none !important; }
     #invoice-preview { display: block !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
-    .invoice-sheet { padding: 0 !important; box-shadow: none !important; }
+    .invoice-sheet { padding: 0 !important; box-shadow: none !important; font-size: 12px !important; }
+    /* Force desktop layout when printing from mobile */
+    .inv-meta { display: flex !important; flex-direction: row !important; justify-content: space-between !important; margin-bottom: 32px !important; }
+    .inv-meta > div:last-child { text-align: right !important; }
+    .inv-header { display: flex !important; flex-direction: row !important; margin-bottom: 40px !important; }
+    .inv-logo img { height: 126px !important; }
+    .inv-title { font-size: 44px !important; }
+    .inv-issued-by { margin-bottom: 28px !important; }
+    .inv-table thead th { font-size: 10px !important; }
+    .inv-table tbody td { font-size: 12px !important; }
+    .inv-totals { width: 260px !important; }
+    .inv-footer { margin-top: 40px !important; }
   }
 
   /* ── Mobile ── */
@@ -495,7 +506,7 @@ Account Number: 10563304</textarea>
     // Auto-generate Stripe Payment Link
     var paymentLink = "";
     try {
-      var resp = await fetch("/api/create-payment-link", {
+      var resp = await fetch("/.netlify/functions/create-payment-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -638,18 +649,19 @@ Account Number: 10563304</textarea>
       "*{box-sizing:border-box;margin:0;padding:0;}",
       "@page{margin:15mm;}",
       "body{background:#fff;font-family:Helvetica Neue,Arial,sans-serif;font-size:12px;line-height:1.5;color:#111;}",
-      ".inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;}",
+      ".inv-header{display:flex!important;flex-direction:row!important;justify-content:space-between;align-items:flex-start;margin-bottom:40px;}",
       ".inv-title{font-size:44px;font-weight:900;letter-spacing:0.04em;color:#111;line-height:1;}",
       ".inv-logo img{height:126px;width:auto;display:block;}",
       ".inv-issued-by{margin-bottom:28px;}",
-      ".inv-meta{display:flex;justify-content:space-between;margin-bottom:32px;}",
+      ".inv-meta{display:flex!important;flex-direction:row!important;justify-content:space-between;margin-bottom:32px;}",
+      ".inv-meta>div:last-child{text-align:right;}",
       ".inv-label{font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#111;margin-bottom:4px;display:block;}",
       ".inv-value{color:#555;white-space:pre-line;font-size:12px;}",
       ".inv-table{width:100%;border-collapse:collapse;}",
       ".inv-table thead tr{border-top:1px solid #bbb;border-bottom:1px solid #bbb;}",
       ".inv-table thead th{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#111;padding:8px 0;text-align:left;}",
       ".inv-table thead th:not(:first-child){text-align:right;}",
-      ".inv-table tbody td{padding:10px 0;color:#555;border-bottom:1px solid #e8e8e8;}",
+      ".inv-table tbody td{padding:10px 0;color:#555;border-bottom:1px solid #e8e8e8;font-size:12px;}",
       ".inv-table tbody td:not(:first-child){text-align:right;}",
       ".inv-totals-wrap{display:flex;justify-content:flex-end;border-top:1px solid #bbb;padding-top:12px;}",
       ".inv-totals{width:260px;}",

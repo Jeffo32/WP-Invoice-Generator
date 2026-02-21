@@ -312,23 +312,8 @@
     .line-item { grid-template-columns: 2fr 1fr 1fr auto; }
     .col-headers { grid-template-columns: 2fr 1fr 1fr auto; }
     .line-item .total-display { display: block; font-size: 10px; min-width: 55px; padding: 10px 6px; }
-    #invoice-preview { margin-top: 24px; }
-    .invoice-sheet { padding: 28px 20px 32px 20px; font-size: 11px; }
-    .inv-title { font-size: 30px; }
-    .inv-logo img { height: 70px; }
-    .inv-header { margin-bottom: 20px; }
-    .inv-issued-by { margin-bottom: 16px; }
-    .inv-meta { flex-direction: column; gap: 14px; margin-bottom: 20px; }
-    .inv-meta > div:last-child { text-align: left !important; }
-    .inv-table thead th { font-size: 9px; padding: 6px 0; }
-    .inv-table tbody td { padding: 7px 0; font-size: 11px; }
-    .inv-totals { width: 100%; }
-    .inv-totals-row { font-size: 11px; }
-    .inv-totals-row.grand-total { font-size: 12px; }
-    .inv-footer { margin-top: 24px; gap: 16px; }
-    .inv-payment { padding: 10px 12px; }
-    .inv-qr-wrap canvas, .inv-qr-wrap img { width: 64px !important; height: 64px !important; }
-    .inv-thankyou { font-size: 12px; }
+    #invoice-preview { margin-top: 24px; overflow-x: auto; }
+    .invoice-sheet { min-width: 600px; }
     .inv-actions { flex-direction: column; align-items: center; }
     .inv-actions button { width: 100%; max-width: 320px; }
   }

@@ -351,13 +351,11 @@ wolfeproductions@icloud.com</textarea>
   <div class="section-label">Client Details</div>
   <textarea id="issued-to" rows="3" placeholder="Client name, company, address..."></textarea>
 
-  <div>
-    <div class="section-label">Invoice Date</div>
-    <input type="text" id="inv-date" placeholder="YYYY-MM-DD" style="width:100%;box-sizing:border-box;">
+  <div style="display:none;">
+    <input type="text" id="inv-date">
   </div>
-  <div>
-    <div class="section-label">Due Date</div>
-    <input type="text" id="due-date" placeholder="YYYY-MM-DD" style="width:100%;box-sizing:border-box;">
+  <div style="display:none;">
+    <input type="text" id="due-date">
   </div>
 
   <div style="opacity:0.35; pointer-events:none;">
@@ -380,6 +378,15 @@ wolfeproductions@icloud.com</textarea>
   <div class="section-label">Payment Info</div>
   <textarea id="payment-info" rows="3">BSB: 063162
 Account Number: 10563304</textarea>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+    <label class="toggle-wrap" style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;">
+      <div class="toggle-switch" id="qr-toggle-wrap" onclick="toggleQR()" style="width:40px;height:22px;background:#333;border-radius:11px;position:relative;transition:background 0.2s;flex-shrink:0;">
+        <div id="qr-knob" style="width:18px;height:18px;background:#888;border-radius:50%;position:absolute;top:2px;left:2px;transition:all 0.2s;"></div>
+      </div>
+      Auto-generate Stripe QR Code
+    </label>
+  </div>
 
   <button class="generate-btn" id="generate-btn" onclick="generateInvoice()">Generate Invoice</button>
 
@@ -423,7 +430,7 @@ Account Number: 10563304</textarea>
   // ── Init dates & invoice number ──
   (function() {
     var today = new Date();
-    var due = new Date(); due.setDate(due.getDate()+30);
+    var due = new Date(); due.setDate(due.getDate()+15);
     function fmt(d) {
       return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
     }
@@ -471,6 +478,17 @@ Account Number: 10563304</textarea>
     container.appendChild(div);
   }
 
+  // ── QR toggle ──
+  var qrEnabled = false;
+  function toggleQR() {
+    qrEnabled = !qrEnabled;
+    var wrap = document.getElementById("qr-toggle-wrap");
+    var knob = document.getElementById("qr-knob");
+    wrap.style.background = qrEnabled ? "#27ae60" : "#333";
+    knob.style.background = qrEnabled ? "#fff" : "#888";
+    knob.style.left = qrEnabled ? "20px" : "2px";
+  }
+
   // ── Generate invoice ──
   async function generateInvoice() {
     var btn = document.getElementById("generate-btn");
@@ -503,27 +521,29 @@ Account Number: 10563304</textarea>
     var taxAmount = subtotal * (taxRate / 100);
     var total     = subtotal + taxAmount;
 
-    // Auto-generate Stripe Payment Link
+    // Auto-generate Stripe Payment Link (only if QR toggle is on)
     var paymentLink = "";
-    try {
-      var resp = await fetch("/.netlify/functions/create-payment-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: total,
-          currency: "aud",
-          invoiceNumber: invNumber,
-          description: "Invoice " + invNumber
-        })
-      });
-      if (resp.ok) {
-        var data = await resp.json();
-        paymentLink = data.url || "";
-      } else {
-        console.warn("Stripe function error:", resp.status);
+    if (qrEnabled) {
+      try {
+        var resp = await fetch("/api/create-payment-link", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: total,
+            currency: "aud",
+            invoiceNumber: invNumber,
+            description: "Invoice " + invNumber
+          })
+        });
+        if (resp.ok) {
+          var data = await resp.json();
+          paymentLink = data.url || "";
+        } else {
+          console.warn("Stripe function error:", resp.status);
+        }
+      } catch(e) {
+        console.warn("Stripe call failed:", e.message);
       }
-    } catch(e) {
-      console.warn("Stripe call failed:", e.message);
     }
 
     btn.textContent = "Generate Invoice";

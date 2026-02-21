@@ -161,15 +161,21 @@
     max-width: 720px;
   }
 
+  .invoice-sheet-wrap {
+    width: 100%;
+    overflow: hidden;
+  }
+
   .invoice-sheet {
     background: #fff;
     color: #111;
-    width: 100%;
+    width: 720px;
     box-sizing: border-box;
     padding: 56px 60px 60px 60px;
     font-family: "Helvetica Neue", Arial, sans-serif;
     font-size: 12px;
     line-height: 1.5;
+    transform-origin: top left;
   }
 
   .inv-header {
@@ -384,7 +390,7 @@ Account Number: 10563304</textarea>
 </div>
 
 <div id="invoice-preview">
-  <div class="invoice-sheet" id="invoice-sheet"></div>
+  <div class="invoice-sheet-wrap" id="invoice-sheet-wrap"><div class="invoice-sheet" id="invoice-sheet"></div></div>
   <div class="inv-actions">
     <button onclick="printInvoice()">Print / Save PDF</button>
     <button onclick="document.getElementById('invoice-preview').style.display='none'">Back to Editor</button>
@@ -611,7 +617,7 @@ Account Number: 10563304</textarea>
       var qrWrap = document.createElement("div");
       qrWrap.className = "inv-qr-wrap";
       var qrTarget = document.createElement("div");
-      qrTarget.id = "inv-qr-code";
+      qrTarget.id = "inv-qr-code-" + Date.now();
       var qrLbl = document.createElement("div");
       qrLbl.className = "inv-qr-label";
       qrLbl.textContent = "Scan to pay";
@@ -630,7 +636,7 @@ Account Number: 10563304</textarea>
 
     // Generate QR code after DOM is ready
     if (paymentLink) {
-      new QRCode(document.getElementById("inv-qr-code"), {
+      new QRCode(qrTarget, {
         text: paymentLink,
         width: 80,
         height: 80,
@@ -642,6 +648,14 @@ Account Number: 10563304</textarea>
 
     var preview = document.getElementById("invoice-preview");
     preview.style.display = "block";
+
+    // Scale invoice to fit screen width
+    var wrap = document.getElementById("invoice-sheet-wrap");
+    var sheet = document.getElementById("invoice-sheet");
+    var scale = wrap.offsetWidth / 720;
+    sheet.style.transform = "scale(" + scale + ")";
+    wrap.style.height = (sheet.offsetHeight * scale) + "px";
+
     preview.scrollIntoView({ behavior: "smooth" });
   }
 

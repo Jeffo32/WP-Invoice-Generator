@@ -1,6 +1,6 @@
 const Stripe = require("stripe");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
@@ -18,15 +18,13 @@ export default async function handler(req, res) {
       currency,
       unit_amount: Math.round(amount * 100),
       product_data: {
-        name: description || `Invoice ${invoiceNumber || ""}`.trim(),
+        name: description || ("Invoice " + (invoiceNumber || "")).trim(),
       },
     });
 
     const paymentLink = await stripe.paymentLinks.create({
       line_items: [{ price: price.id, quantity: 1 }],
-      metadata: {
-        invoice_number: invoiceNumber || "",
-      },
+      metadata: { invoice_number: invoiceNumber || "" },
       after_completion: {
         type: "hosted_confirmation",
         hosted_confirmation: {
@@ -40,4 +38,4 @@ export default async function handler(req, res) {
     console.error("Stripe error:", err.message);
     return res.status(500).json({ error: err.message });
   }
-}
+};
